@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bead Studio | Luxury Jewelry</title>
+    <style>
+        :root { --gold: #C5A059; --dark: #2C2623; --cream: #FDFBF7; --bg: #F5EFEB; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cream); margin: 0; color: var(--dark); }
+        .navbar { background: #fff; padding: 20px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(197, 160, 89, 0.3); }
+        .brand { font-size: 26px; font-weight: bold; color: var(--gold); text-decoration: none; letter-spacing: 2px; }
+        .nav-links a { margin-left: 25px; text-decoration: none; color: var(--dark); font-weight: 600; }
+        .hero { padding: 100px 5%; text-align: center; background: linear-gradient(135deg, var(--cream), var(--bg)); }
+        .hero h1 { font-size: 48px; font-weight: 300; }
+        .hero span { color: var(--gold); font-weight: bold; }
+        .categories { display: flex; gap: 30px; justify-content: center; padding: 60px 5%; }
+        .cat-card { background: white; border: 1px solid var(--gold); border-radius: 15px; padding: 40px; text-align: center; width: 300px; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .cat-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(197, 160, 89, 0.2); }
+        .btn { background: var(--gold); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" class="brand">✨ BEAD STUDIO</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/traditional">Traditional Collection</a>
+            <a href="/western">Western Collection</a>
+            <a href="/cart">Cart 🛒</a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Handcrafted <span>Heritage</span> & <span>Modern</span> Luxury</h1>
+        <p>Explore luxury Kundan Jhumkas or chic minimalist everyday Western pieces.</p>
+    </div>
+
+    <div class="categories">
+        <div class="cat-card">
+            <h2>👑 Traditional</h2>
+            <p>Jhumkas, Chandbalis, and Royal South Asian Jewelry.</p>
+            <a href="/traditional" class="btn">Explore Traditional</a>
+        </div>
+        <div class="cat-card">
+            <h2>✨ Western</h2>
+            <p>Modern Hoops, Minimalist Studs, and Trendy Pieces.</p>
+            <a href="/western" class="btn">Explore Western</a>
+        </div>
+    </div>
+</body>
+</html>

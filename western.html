@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Western Collection | Bead Studio</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #FDFBF7; margin: 0; color: #2C2623; }
+        .navbar { background: #fff; padding: 20px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid #C5A059; }
+        .header { text-align: center; padding: 40px 20px; background: #F5EFEB; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 40px 5%; }
+        .card { background: white; border-radius: 12px; padding: 15px; border: 1px solid #EADCC9; text-align: center; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(197, 160, 89, 0.2); }
+        .card img { width: 100%; height: 240px; object-fit: cover; border-radius: 8px; }
+        .price { color: #C5A059; font-weight: bold; font-size: 18px; margin: 10px 0; }
+        .btn { background: #C5A059; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="color:#C5A059; font-weight:bold; font-size:22px; text-decoration:none;">✨ BEAD STUDIO</a>
+        <div>
+            <a href="/" style="margin-right:20px; text-decoration:none; color:#2C2623;">Home</a>
+            <a href="/traditional" style="margin-right:20px; text-decoration:none; color:#2C2623;">Traditional</a>
+            <a href="/western" style="margin-right:20px; text-decoration:none; color:#C5A059; font-weight:bold;">Western</a>
+            <a href="/cart" style="text-decoration:none; color:#2C2623;">Cart 🛒</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1 style="color:#2C2623;">✨ Contemporary Western Collection</h1>
+        <p>Minimalist Hoops, Chic Drops, and Everyday Statement Jewelry.</p>
+    </div>
+
+    <div class="grid" id="westernGrid"></div>
+
+    <script>
+        fetch('/api/products/Western')
+            .then(res => res.json())
+            .then(products => {
+                const grid = document.getElementById('westernGrid');
+                products.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="card">
+                            <img src="${p.ImageURL}">
+                            <h3>${p.ProductName}</h3>
+                            <div class="price">Rs. ${p.Price.toLocaleString()}</div>
+                            <button class="btn" onclick='addToCart(${JSON.stringify(p)})'>Add To Cart</button>
+                        </div>
+                    `;
+                });
+            });
+
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            let found = cart.find(item => item.id === product.ProductID);
+            if (found) { found.qty++; } else { cart.push({ id: product.ProductID, name: product.ProductName, price: product.Price, qty: 1 }); }
+            localStorage.setItem('bead_cart', JSON.stringify(cart));
+            alert('🎉 Added to Bag!');
+        }
+    </script>
+</body>
+</html>

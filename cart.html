@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Bead Studio</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #FDFBF7; margin: 0; padding: 20px; color: #2C2623; }
+        .container { max-width: 650px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #C5A059; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        
+        /* Navbar */
+        .nav-link { text-decoration: none; color: #C5A059; font-weight: bold; margin-bottom: 20px; display: inline-block; }
+
+        /* Item Row Styling */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EADCC9; padding: 12px 0; }
+        .item-details { flex-grow: 1; }
+        .item-title { font-weight: bold; font-size: 16px; }
+        .item-price { color: #C5A059; font-size: 14px; margin-top: 4px; }
+
+        /* Actions: Quantity + Remove */
+        .item-actions { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { background: #F5EFEB; border: 1px solid #C5A059; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-weight: bold; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn-delete:hover { background: #cc0000; }
+
+        /* Inputs & Buttons */
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-checkout { background: #C5A059; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-clear { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/shop" class="nav-link">← Back to Shopping</a>
+        <h2 style="color:#2C2623; margin-top:0;">Your Shopping Bag 🛒</h2>
+        
+        <div id="cartItems"></div>
+        
+        <h3 id="totalPrice" style="color:#C5A059; text-align:right; margin-top: 20px;">Total: Rs. 0</h3>
+        <button class="btn-clear" onclick="clearFullCart()">Clear Complete Bag 🗑️</button>
+
+        <hr style="border: 0.5px solid #EADCC9; margin: 25px 0;">
+
+        <h3>Customer Details</h3>
+        <input type="text" id="custName" placeholder="Full Name">
+        <input type="email" id="custEmail" placeholder="Email Address">
+        <input type="tel" id="custNumber" placeholder="Contact Number (e.g. 03001234567)">
+        <input type="text" id="custCity" placeholder="City">
+        <input type="text" id="custAddress" placeholder="House / House No, Street, Area Address">
+
+        <button class="btn-checkout" onclick="checkout()">Place Order (Save to DB)</button>
+    </div>
+
+    <script>
+        // Load & Display Items in Cart
+        function loadCart() {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            let container = document.getElementById('cartItems');
+            let total = 0;
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color:#777; text-align:center; padding: 20px;">Your shopping bag is empty.</p>';
+                document.getElementById('totalPrice').innerText = 'Total: Rs. 0';
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div class="item-details">
+                            <div class="item-title">${item.name}</div>
+                            <div class="item-price">Rs. ${item.price.toLocaleString()} x ${item.qty} = <b>Rs. ${itemTotal.toLocaleString()}</b></div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            <button class="btn-delete" onclick="removeItem(${index})">Delete 🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('totalPrice').innerText = 'Total: Rs. ' + total.toLocaleString();
+        }
+
+        // 1. Single Item Remove Function
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            cart.splice(index, 1); // Delete item at specified index
+            localStorage.setItem('bead_cart', JSON.stringify(cart));
+            loadCart(); // Refresh UI
+        }
+
+        // 2. Quantity Increase / Decrease (+ / -)
+        function updateQty(index, change) {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            cart[index].qty += change;
+
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1); // Remove if quantity becomes 0
+            }
+
+            localStorage.setItem('bead_cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        // 3. Clear All Items
+        function clearFullCart() {
+            localStorage.removeItem('bead_cart');
+            loadCart();
+        }
+
+        // 4. Place Order & Save to SQL DB
+        function checkout() {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            const name = document.getElementById('custName').value;
+            const email = document.getElementById('custEmail').value;
+            const phone = document.getElementById('custNumber').value;
+            const city = document.getElementById('custCity').value;
+            const address = document.getElementById('custAddress').value;
+
+            if (!name || !email || !phone || !city || !address || cart.length === 0) {
+                return alert('Please fill in all details and add items to cart!');
+            }
+
+            fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: name,
+                    email: email,
+                    phone: phone,
+                    city: city,
+                    address: address,
+                    cartItems: cart
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                localStorage.removeItem('bead_cart');
+                window.location.href = '/';
+            })
+            .catch(err => alert("Error saving order: " + err.message));
+        }
+
+        // Initialize Page
+        loadCart();
+    </script>
+</body>
+</html>

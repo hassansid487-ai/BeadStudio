@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop | Bead Studio</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #FDFBF7; margin: 0; }
+        .navbar { background: #FFFFFF; padding: 20px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid #C5A059; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; padding: 40px 5%; }
+        .card { background: white; border-radius: 12px; padding: 15px; border: 1px solid #EADCC9; text-align: center; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+        .btn { background: #C5A059; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="color:#C5A059; font-weight:bold; text-decoration:none;">✨ Bead Studio</a>
+        <div>
+            <a href="/" style="margin-right:15px;">Home</a>
+            <a href="/shop" style="margin-right:15px;">Shop</a>
+            <a href="/cart">Cart 🛒</a>
+        </div>
+    </div>
+
+    <h2 style="text-align:center; margin-top:30px; color:#2C2623;">Jewelry Collections</h2>
+    <div class="grid" id="productContainer"></div>
+
+    <script>
+        fetch('/api/products')
+            .then(res => res.json())
+            .then(products => {
+                const container = document.getElementById('productContainer');
+                products.forEach(p => {
+                    container.innerHTML += `
+                        <div class="card">
+                            <img src="${p.ImageURL}">
+                            <h3>${p.ProductName}</h3>
+                            <p style="color:#C5A059; font-weight:bold;">Rs. ${p.Price}</p>
+                            <button class="btn" onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+                        </div>
+                    `;
+                });
+            });
+
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem('bead_cart') || '[]');
+            let found = cart.find(item => item.id === product.ProductID);
+            if (found) {
+                found.qty++;
+            } else {
+                cart.push({ id: product.ProductID, name: product.ProductName, price: product.Price, qty: 1 });
+            }
+            localStorage.setItem('bead_cart', JSON.stringify(cart));
+            alert('Added to Bag!');
+        }
+    </script>
+</body>
+</html>
